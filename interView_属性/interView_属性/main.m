@@ -14,7 +14,7 @@
 @implementation Persion
 @synthesize name;
 
-- (NSArray *)propertiesList {
+- (NSArray *)IvarsList {
 
     unsigned int count = 0;
     /**
@@ -46,6 +46,35 @@
 
 }
 
+-(NSArray*)methodsList{
+    NSMutableArray *methodArray = [[NSMutableArray alloc] init];
+    unsigned int count;
+    Method *methodList = class_copyMethodList([self class], &count);
+    for (int i = 0; i < count; i++) {
+        Method method = methodList[i];
+        SEL methodNameSel = method_getName(method);
+        NSString *methodNameStr = NSStringFromSelector(methodNameSel);
+        [methodArray addObject:methodNameStr];
+    }
+    
+    return [methodArray copy];
+}
+
+-(NSArray*)propertysList{
+    NSMutableArray *propertyArray = [[NSMutableArray alloc] init];
+    unsigned int count;
+    objc_property_t *propertyList = class_copyPropertyList([self class], &count);
+    for (int i = 0; i < count; i++) {
+        objc_property_t property = propertyList[i];
+        const char *cName = property_getName(property);
+        NSString *name = [NSString stringWithCString:cName encoding:NSUTF8StringEncoding];
+        NSLog(@"%@",name);
+        
+        [propertyArray addObject:name];
+    }
+    return propertyArray.copy;
+}
+
 @end
 
 int main(int argc, const char * argv[]) {
@@ -54,8 +83,8 @@ int main(int argc, const char * argv[]) {
         NSLog(@"Hello, World!");
         Persion *persion = [[Persion alloc] init];
         
-        NSArray *ivarList = [persion propertiesList];
-//        NSLog(ivarList);
+        [persion IvarsList];
+
         
         
     }
